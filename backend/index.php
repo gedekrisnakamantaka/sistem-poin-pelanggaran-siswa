@@ -12,7 +12,7 @@
 </head>
 <body>
     <div id="app">
-        <h1>Welcome to My PHP Application</h1>
+        <h1>Welcome to My PHP cokk</h1>
         <p><?php echo salam("bro"); ?></p>
     </div>
 </body>
