@@ -2,10 +2,10 @@
 // Membuat koneksi
 function getDBConnection() {
     try {
-        $host = 'localhost';
+        $host = 'db';
         $dbName = 'poin_pelanggaran_siswa';
         $username = 'root';
-        $password = '';
+        $password = 'root';
 
         $dsn = "mysql:host=$host;dbname=$dbName;charset=utf8mb4";
         $options = [

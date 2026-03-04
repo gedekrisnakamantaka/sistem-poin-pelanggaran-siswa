@@ -1,19 +1,19 @@
 <?php
-require_once '../controllers/guruController.php';
-require_once '../controllers/siswaController.php';
-// require_once '../controllers/pelanggaranController.php';
-// require_once '../controllers/suratController.php';
-// require_once '../helpers/responseHelper.php';
+require_once 'middleware/cors.php';
+require_once 'helpers/responseHelper.php';
+require_once 'controllers/authController.php';
+require_once 'controllers/guruController.php';
+require_once 'controllers/siswaController.php';
+// require_once 'controllers/pelanggaranController.php';
+// require_once 'controllers/suratController.php';
 
+Cors::handle();
+
+$authController = new authController();
 $guruController = new GuruController();
 $siswaController = new SiswaController();
 // $pelanggaranController = new PelanggaranController();
 // $suratController = new SuratController();
-
-// CORS headers
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
 // Handle preflight request
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -23,6 +23,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 // Parse the URI and determine the endpoint
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+
+// Menghapus prefix '/api' dari URL jika ada
+if (strpos($path, '/api') === 0) {
+    $path = substr($path, 4);
+}
+
 $segments = explode('/', trim($path, '/'));
 $endpoint = end($segments);
 
@@ -30,19 +36,32 @@ $endpoint = end($segments);
 if (is_numeric($endpoint) && isset($segments[count($segments) - 2]) && $segments[count($segments) - 2] === 'guru') {
     $_GET['id'] = $endpoint;
     $endpoint = 'guru';
-} elseif (is_numeric($endpoint) && isset($segments[count($segments) - 2]) && $segments[count($segments) - 2] === 'siswa') {
+}
+elseif (is_numeric($endpoint) && isset($segments[count($segments) - 2]) && $segments[count($segments) - 2] === 'siswa') {
     $_GET['id'] = $endpoint;
     $endpoint = 'siswa';
-} elseif (is_numeric($endpoint) && isset($segments[count($segments) - 2]) && $segments[count($segments) - 2] === 'pelanggaran') {
+}
+elseif (is_numeric($endpoint) && isset($segments[count($segments) - 2]) && $segments[count($segments) - 2] === 'pelanggaran') {
     $_GET['id'] = $endpoint;
     $endpoint = 'pelanggaran';
-} elseif (is_numeric($endpoint) && isset($segments[count($segments) - 2]) && $segments[count($segments) - 2] === 'surat') {
+}
+elseif (is_numeric($endpoint) && isset($segments[count($segments) - 2]) && $segments[count($segments) - 2] === 'surat') {
     $_GET['id'] = $endpoint;
     $endpoint = 'surat';
 }
 
 // Route handling
 switch ($endpoint) {
+    case 'login':
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $authController->login();
+        }
+        else {
+            // Method Not Allowed
+            BadRequest(null, 'Method Not Allowed');
+        }
+        break;
+
     case 'guru':
         switch ($_SERVER['REQUEST_METHOD']) {
             case 'GET':
@@ -124,6 +143,7 @@ switch ($endpoint) {
         break;
 
     default:
+        // Default case
         // Route not found
         NotFound(null, 'Route not found');
 }

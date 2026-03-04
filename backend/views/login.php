@@ -6,9 +6,9 @@
     <title>Login</title>
 </head>
 <body>
-    <h2>Login Page</h2>
+    <h2>Login page</h2>
     <form action="authenticate.php" method="POST">
-        <label for="username">Username:</label>
+        <label for="username">username :</label>
         <input type="text" id="username" name="username" required>
         <br><br>
         <label for="password">Password:</label>
@@ -17,4 +17,4 @@
         <button type="submit">Login</button>
     </form>
 </body>
-</html>
+</html> 
